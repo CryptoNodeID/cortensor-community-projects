@@ -126,7 +126,7 @@ fi
 /home/deploy/.cortensor/cortensord .env minerv4 1 docker
 EOF
 msg_info "Building Cortensor..."
-sudo docker build -t cortensor-image:latest -f Dockerfile . >/dev/null 2>&1
+sudo docker build --no-cache -t cortensor-image:latest -f Dockerfile . >/dev/null 2>&1
 msg_ok "Cortensor has been built."
 rm -rf Dockerfile run.sh
 msg_ok "Cortensor has been installed."
@@ -151,7 +151,6 @@ if [ -d "$WORKDIR" ]; then
     msg_ok "Cortensor has been stopped."
     msg_info "Removing existing Cortensor..."
     sudo docker rmi -f cortensor-image:latest >/dev/null 2>&1
-    sudo docker rmi $(sudo docker images -f "dangling=true" -q) >/dev/null 2>&1
     sudo docker system prune -f >/dev/null 2>&1
     msg_ok "Old Cortensor has been removed."
     tee Dockerfile > /dev/null << EOF
@@ -292,7 +291,7 @@ if (whiptail --backtitle "CryptoNodeID Helper Scripts" --title "Cortensor Node" 
       fi
     done
     while [ -z "$CONTRACT_ADDRESS_RUNTIME" ]; do
-      if CONTRACT_ADDRESS_RUNTIME=$(whiptail --backtitle "CryptoNodeID Helper Scripts" --title "Cortensor Node" --inputbox "Input your contract address runtime (Default: 0x8361E7821bDAD7F8F0aC7862Bebb190B8Da1A160):" 8 60 "0x8361E7821bDAD7F8F0aC7862Bebb190B8Da1A160" 3>&1 1>&2 2>&3); then
+      if CONTRACT_ADDRESS_RUNTIME=$(whiptail --backtitle "CryptoNodeID Helper Scripts" --title "Cortensor Node" --inputbox "Input your contract address runtime (Default: 0x2ACb5EE389B06250cC40593edbCc6eF3b9cEC8c7):" 8 60 "0x2ACb5EE389B06250cC40593edbCc6eF3b9cEC8c7" 3>&1 1>&2 2>&3); then
         if [[ $CONTRACT_ADDRESS_RUNTIME != 0x* ]]; then
             whiptail --backtitle "CryptoNodeID Helper Scripts" --title "Cortensor Node" --msgbox "Error: Contract Address Runtime must start with 0x" 8 60
             CONTRACT_ADDRESS_RUNTIME=""
@@ -485,7 +484,7 @@ while IFS= read -r line; do
     json+="\"cortensor-$number\", "
   fi
 done < $HOME/cortensor-docker/.env
-json="${json%, }], \"tail_lines\": 500, \"check_interval_seconds\": 900, \"grace_period_seconds\": 930, \"stats_api_url\": \"https://lb-be-5.cortensor.network/network-stats-tasks\", \"tx_timeout_seconds\": 45, \"stagnation_alert_enabled\": true, \"stagnation_threshold_minutes\": 30, \"reputation_check_enabled\": true, \"reputation_api_base_url\": \"https://lb-be-5.cortensor.network/reputation/\", \"reputation_check_window\": 20, \"reputation_failure_threshold\": 5, \"reputation_restart_cooldown_minutes\": 30}"
+json="${json%, }], \"tail_lines\": 500, \"check_interval_seconds\": 900, \"grace_period_seconds\": 930, \"stats_api_url\": \"https://db-be-6.cortensor.network/network-stats-tasks\", \"tx_timeout_seconds\": 45, \"stagnation_alert_enabled\": true, \"stagnation_threshold_minutes\": 30, \"reputation_check_enabled\": true, \"reputation_api_base_url\": \"https://db-be-6.cortensor.network/reputation/\", \"reputation_check_window\": 20, \"reputation_failure_threshold\": 5, \"reputation_restart_cooldown_minutes\": 30}"
 echo "$json" | jq . | tee $MONITORING_DIR/config.json
 msg_ok "Cortensor Monitoring configuration file created successfully."
 
